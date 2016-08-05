@@ -661,6 +661,14 @@ user_mem_check(struct Env *env, const void *va, size_t len, int perm)
 	for(current=left; current<right; current+=PGSIZE)
 	{
 		pte =  pgdir_walk(env->env_pgdir, (void *)current, 0);
+		if(!pte)
+		{
+			if(current==left)
+				user_mem_check_addr = (uintptr_t)va;
+			else
+				user_mem_check_addr = (uintptr_t)current;
+			return -E_FAULT;
+		}
 		if(((int)current+PGSIZE>ULIM)||(*pte&perm)!=perm)
 		{
 			if(current==left)
