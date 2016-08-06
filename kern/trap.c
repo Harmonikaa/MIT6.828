@@ -205,6 +205,10 @@ trap_dispatch(struct Trapframe *tf)
 			tf->tf_regs.reg_eax = syscall(tf->tf_regs.reg_eax, tf->tf_regs.reg_edx, tf->tf_regs.reg_ecx, 
 				tf->tf_regs.reg_ebx, tf->tf_regs.reg_edi,tf->tf_regs.reg_esi);
 			break;
+		case IRQ_TIMER + IRQ_OFFSET:
+			lapic_eoi();
+			sched_yield();
+			break;
 		default:
 		// Unexpected trap: The user process or the kernel has a bug.
 			print_trapframe(tf);
